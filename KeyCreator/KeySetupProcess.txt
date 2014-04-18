@@ -1,0 +1,43 @@
+﻿1) Open a Visual Studio Command Line prompt. Use Run As Administrator
+2) Create a cert. Example command line: makecert -sr LocalMachine -ss My -n "CN=AzureTableEncryption v1" -pe -sky exchange -len 2048
+3) Start-> Run -> type "mmc.exe"
+4) File -> Add/Remove Snap-Ins
+5) Select "Certificates", click "Add"
+6) Choose "Computer account". Click "Finish"
+7) Click "OK" to close Add/Remove Span-Ins page
+8) Expand Certificates (Local Computer) -> Personal -> Certificates
+9) Find the new cert. Right click -> All Tasks -> Export
+10) Export the private key, use PFX format, choose appropriate password and save
+
+11) Open Azure Management Console in web browser
+12) For each Hosted Service that needs to use the encrypted data:
+   a) find the Certificates folder. Right Click -> Add Certificate
+   b) Choose the certificate file, enter password, click create
+
+13) For each Azure Role that needs to use the encrypted data:
+  a) Find Cloud Project
+  b) Expand "Roles" folder
+  c) For each Role
+     i) Right-click -> Properties
+	 ii) Go to Certificates tab
+	 iii) Click Add Certificate
+	 iv) Enter appropriate name, set Store Location: LocalMachine and Store Name: My.
+	 v) Click the "..." button inside the "Thumbprint" field. Choose the cert you created
+  
+14) Open the KeyCreator project, Program.cs file  
+15) Set the acctConnectString variable to your storage account connect string
+16) Set the certThumbprint variable to your certificates thumbprint (this can be found in the Azure Project Properties -> Certificates pane, or in the Certificate Manager snap-in)
+17) Set the encryptionVersion variable to an appropriate number. Thus must not overlap with an existing version in your system.
+18) Run the KeyCreator program
+
+Note: If you have more than one Hosted Service using encryption, you should upload versions with the encryption code before enabling encryption on any of them.
+Otherwise some roles will encrypt data, but the other will be unable to read it.
+
+Note: Once you begin using a symmetric key, you must not delete it, or the x509 certificate used to create it, until there are no more entities encrypted with that key. 
+If you a lose the key or the certificate, all entities encrypted with it will be completely unreadable. 
+It is advisable to back up your SymmetricKey table in multiple locations, along with your other data. Because the keys themselves are encrypted, this is still safe to do.
+You should back up your certificates to a separate, secure location. Consider using either a an encrypted file, or multiple CD's kept in different locations.
+
+Note: You should use a different X509 certificate and different AES keys for you production environment than you use in your test environment. 
+
+

@@ -1,0 +1,14 @@
+Installing Table Encryption certs is a lot like installing SSL certs. In fact, there's only one extra step. 
+
+1) Start -> Run, type in "MMC"
+2) File -> Add/Remove Snap-Ins
+3) Choose the "Certificates" snap-in. Click Add
+4) In the popup, choose "Local Machine"
+5) Right click the "Personal" store, choose "All Tasks -> Import"
+6) Go through the import process for the cert (EncryptDecryptTests\AzureTableEncryptTestCert.pfx)
+  6a) The password is "test"
+  6b) You need to import the private key. You might as well make the cert exportable.
+8) Find the cert you just imported, it will be named "AzureTableEncrypt Unit Test". Right Click -> All Tasks -> Manage Private Key
+9) Make sure to add yourself and the built-in "Network Service" user. Make sure you have Full Control, and NetworkService has Read access.
+
+That's pretty much it. 
