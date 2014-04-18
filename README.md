@@ -18,8 +18,8 @@ The approach this sample application takes is to combine the security of the [x5
 ## Writing an entity to Azure
 
 A [x509][x509] certificate is loaded from the LocalMachine\User crypto store.
-The DataServiceContextEx_WritingEntity event fires when the SaveChanges method is called.
-If the event handler DataServiceContextEx_WritingEntity determines that the [Encrypt][encrypt] attribute was applied on a given property it will [encrypt][encrypt] the data
+The `DataServiceContextEx_WritingEntity` event fires when the SaveChanges method is called.
+If the event handler `DataServiceContextEx_WritingEntity` determines that the [Encrypt][encrypt] attribute was applied on a given property it will [encrypt][encrypt] the data
 Then there will be an attempt to load the encrypted [symmetric key][symmetric] from Azure Table
 The [symmetric key][symmetric] will be decrypted using the [x509][x509] certificate (slow and secure)
 If there is no [symmetric key][symmetric] to be found, then a new one will be generated, then encrypted and saved
@@ -28,8 +28,8 @@ Note: The decrypted [symmetric key][symmetric] resides only in RAM, and this is 
 ## Reading an entity from Azure
 
 A [x509][x509] certificate is loaded from the LocalMachine\User crypto store, if not already done.
-The DataServiceContextEx_ReadingEntity event fires when the SaveChanges method is called.
-If the event handler DataServiceContextEx_ReadingEntity determines that the [Encrypt][encrypt] attribute was applied on a given property it will decrypt the data
+The `DataServiceContextEx_ReadingEntity` event fires when the SaveChanges method is called.
+If the event handler `DataServiceContextEx_ReadingEntity` determines that the [Encrypt][encrypt] attribute was applied on a given property it will decrypt the data
 The decrypted [symmetric key][symmetric] resides only in RAM, and this is used to quickly decrypt the data saved to Azure table
 
 ## What's on the wire?, What's saved in the cloud?
