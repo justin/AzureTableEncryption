@@ -46,7 +46,10 @@ If you use Fiddler, Netmon, or any tool that exposes Azure Studio contents you w
 
 * Property encryption. I'm exploring ways to compress and [encrypt][encrypt] the property names. Each property label is redundantly stored in Azure Table Storage. Since most labels are A-Z I'm exploring ways to save more data per byte using this library: http://baseanythingconvert.codeplex.com/ Basically I intend to convert the "ASCII" label as an array of Unicode bytes.
 
+_Note: This is forked from the old [Codeplex project from 2011][cp]_
+
 [symmetric]: https://github.com/glassboardapp/AzureTableEncryption/wiki/The-Symmetric-Key
 [faq]: https://github.com/glassboardapp/AzureTableEncryption/wiki/[FAQ][faq]
 [encrypt]: https://github.com/glassboardapp/AzureTableEncryption/wiki/The-Encrypt-Attribute
 [x509]: https://github.com/glassboardapp/AzureTableEncryption/wiki/The-x509-Certificate
+[cp]: https://azuretableencrypt.codeplex.com/
