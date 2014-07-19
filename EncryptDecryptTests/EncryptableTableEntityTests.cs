@@ -27,7 +27,8 @@ namespace EncryptDecryptTests
             testEntity = new EncryptableTestEntity()
             {
                 StringField = Guid.NewGuid().ToString(),
-                ByteField = Guid.NewGuid().ToByteArray()
+                ByteField = Guid.NewGuid().ToByteArray(),
+                EncryptionVersion = SetupFixture.TEST_ENCRYPTION_VERSION 
             };
         }
 

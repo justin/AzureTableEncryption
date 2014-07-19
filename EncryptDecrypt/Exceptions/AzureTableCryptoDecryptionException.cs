@@ -11,19 +11,19 @@ namespace EncryptDecrypt.Exceptions
     /// </summary>
     public class AzureTableCryptoDecryptionException : AzureTableCryptoException
     {
-        public TableServiceEntity Entity { get; private set; }
+        public EncryptableTableEntity Entity { get; private set; }
 
-        public AzureTableCryptoDecryptionException(TableServiceEntity entity)
-            : this(null, "Error decrypting a table service entity")
+        public AzureTableCryptoDecryptionException(EncryptableTableEntity entity)
+            : this(null, "Error decrypting a table entity")
         {
         }
 
-        public AzureTableCryptoDecryptionException(TableServiceEntity entity, string msg)
+        public AzureTableCryptoDecryptionException(EncryptableTableEntity entity, string msg)
             : this(entity, msg, null)
         {
         }
 
-        public AzureTableCryptoDecryptionException(TableServiceEntity entity, string msg, Exception inner)
+        public AzureTableCryptoDecryptionException(EncryptableTableEntity entity, string msg, Exception inner)
             : base(msg, inner)
         {
             this.Entity = entity;

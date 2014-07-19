@@ -5,92 +5,74 @@ using System.Text;
 using EncryptDecrypt;
 using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
+using Microsoft.WindowsAzure.Storage.Table;
+using EncryptDecrypt.Exceptions;
 
 namespace EncryptDecryptTests
 {
     /// <summary>
     /// Simple table for unit testing
     /// </summary>
-    internal class TestTable : EncryptableTableBase
+    internal class TestTable : EncryptableTableEntity
     {
+        private CloudStorageAccount storageAccount;
 
-        public TestTable()
-            : this(true)
+        public TestTable(CloudStorageAccount _account)
         {
+            this.storageAccount = _account;
         }
-
-        public TestTable(bool cryptoEnabled)
-            : base(CloudStorageAccount.DevelopmentStorageAccount, cryptoEnabled)
-        {
-            base.IgnoreResourceNotFoundException = true;
-            base.MergeOption = System.Data.Services.Client.MergeOption.NoTracking;
-        }
-
 
         public const string TABLE_NAME = "AzureTableCryptoUnitTestTable";
 
-        public IQueryable<TestEntity> TestEntities
+        public EncryptableTestEntity GetEntity(EncryptableTestEntity requestedEntity)
         {
-            get
+            TableOperation retrieveOperation = TableOperation.Retrieve<EncryptableTestEntity>(requestedEntity.PartitionKey, requestedEntity.RowKey);
+            TableResult retrievedResult = GetTable().Execute(retrieveOperation);
+            EncryptableTestEntity entity = (EncryptableTestEntity)retrievedResult.Result;
+
+            return entity;
+
+        }
+
+        public void AddEntity(EncryptableTestEntity entity)
+        {
+            try
             {
-                return this.CreateQuery<TestEntity>(TABLE_NAME);
+                var op = TableOperation.InsertOrReplace(entity);
+                GetTable().Execute(op);
+            }    
+            catch (Exception ex)
+            {
+                // No Op.
             }
         }
 
-        public TestEntity GetEntity(TestEntity requestedEntity)
+        public void UpdateEntity(EncryptableTestEntity entity)
         {
-            return (from e in TestEntities
-                    where e.PartitionKey == requestedEntity.PartitionKey
-                    && e.RowKey == requestedEntity.RowKey
-                    select e).FirstOrDefault();
+            var op = TableOperation.InsertOrReplace(entity);
+            GetTable().Execute(op);
         }
 
-        public void AddEntity(TestEntity entity)
+        private EncryptableTestEntity GetExistingRow(string partitionKey, string rowKey)
         {
-            TestEntity existingRow = GetExistingRow(entity.PartitionKey, entity.RowKey);
-            if (existingRow != null)
-            {
-                base.Detach(existingRow);
-            }
+            TableOperation retrieveOperation = TableOperation.Retrieve<EncryptableTestEntity>(partitionKey, rowKey);
+            TableResult retrievedResult = GetTable().Execute(retrieveOperation);
+            EncryptableTestEntity entity = (EncryptableTestEntity)retrievedResult.Result;
 
-            this.AddObject(TABLE_NAME, entity);
-            this.SaveChangesWithRetries();
+            return entity;
         }
 
-        public void UpdateEntity(TestEntity entity)
+        public void DeleteEntity(EncryptableTestEntity entity)
         {
-            TestEntity existingRow = GetExistingRow(entity.PartitionKey, entity.RowKey);
-            if (existingRow != null)
-            {
-                base.Detach(existingRow);
-            }
-
-            this.AttachTo(TABLE_NAME, entity, "*");
-            base.UpdateObject(entity);
-            this.SaveChangesWithRetries();
-        }
-
-        private TestEntity GetExistingRow(string partitionKey, string rowKey)
-        {
-            var query = (from e in base.Entities
-                         where e.Entity is TestEntity
-                         && ((TestEntity)e.Entity).RowKey == rowKey
-                         && ((TestEntity)e.Entity).PartitionKey == partitionKey
-                         select (TestEntity)e.Entity);
-
-            return query.FirstOrDefault();
-        }
-
-        public void DeleteEntity(TestEntity entity)
-        {
-            this.DeleteObject(entity);
-            this.SaveChangesWithRetries();
+            entity.ETag = "*";
+            var op = TableOperation.Delete(entity);
+            GetTable().Execute(op);
         }
 
         /// <summary>
         /// Encryption to use - allows us to enable/disable encryption for testing purposes
         /// </summary>
-        protected override int? EncryptionVersion
+        public override int? EncryptionVersion
         {
             get
             {
@@ -103,28 +85,10 @@ namespace EncryptDecryptTests
             get;
             set;
         }
-    }
 
-    internal class TestEntity : EncryptableTableServiceEntity
-    {
-        public TestEntity()
+        private CloudTable GetTable()
         {
-            this.PartitionKey = "TestEntityPartition";
-            this.RowKey = Guid.NewGuid().ToString();
-        }
-
-        [Encrypt]
-        public string StringField { get; set; }
-
-        [Encrypt]
-        public byte[] ByteField { get; set; }
-
-        public void AssertEqualTo(TestEntity other)
-        {
-            Assert.NotNull(other);
-            Assert.AreEqual(this.RowKey, other.RowKey, "RowKeys do not match");
-            Assert.AreEqual(this.StringField, other.StringField, "String fields do not match");
-            CollectionAssert.AreEqual(this.ByteField, other.ByteField, "Byte fields do not match");
+            return storageAccount.CreateCloudTableClient().GetTableReference(TABLE_NAME);
         }
     }
 }

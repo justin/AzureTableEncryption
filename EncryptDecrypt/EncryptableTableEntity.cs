@@ -6,6 +6,7 @@ using System.Text;
 using EncryptDecrypt.Exceptions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
+using System.Security.Cryptography;
 
 namespace EncryptDecrypt
 {
@@ -13,7 +14,7 @@ namespace EncryptDecrypt
     /// An entity base class supporting transparent encryption.
     /// This entity does not require a Table base class, but you must set the encryption version.
     /// 
-    /// You must also initialize the crypto by alling AzureTableCrypto.Initialize() once before using this class. 
+    /// You must also initialize the crypto by calling AzureTableCrypto.Initialize() once before using this class. 
     /// A WorkerRole.OnStart() method or the Global.Application_Start() function would be a good place for that. 
     /// </summary>
     public class EncryptableTableEntity : TableEntity
@@ -23,10 +24,27 @@ namespace EncryptDecrypt
         public override void ReadEntity(IDictionary<string,EntityProperty> properties, OperationContext operationContext)
         {
             base.ReadEntity(properties, operationContext);
-            
-            if (this.EncryptionVersion.HasValue && this.EncryptionVersion.Value > 0)
+
+            try
             {
-                AzureTableCrypto.Get().DecryptObject(this.EncryptionVersion.Value, this);
+                if ((this.EncryptionVersion.HasValue && this.EncryptionVersion.Value > 0))
+                {
+                    AzureTableCrypto.Get().DecryptObject(this.EncryptionVersion.Value, this);
+                }
+            }
+            catch (FormatException fe)
+            {
+                //FormatException gets thrown when the data is not properly Base-64 encoded
+
+                throw new AzureTableCryptoDecryptionException(this, "Error decrypting table service entity", fe);
+            }
+            catch (CryptographicException ce)
+            {
+                throw new AzureTableCryptoDecryptionException(this, "Error decrypting table service entity", ce);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
             }
         }
 
@@ -46,7 +64,7 @@ namespace EncryptDecrypt
  
             var properties = base.WriteEntity(operationContext);
 
-            if (this.EncryptionVersion.HasValue && this.EncryptionVersion > 0)
+            if ((this.EncryptionVersion.HasValue && this.EncryptionVersion > 0))
             {
                 foreach (PropertyInfo property in this.GetType().GetProperties())
                 {
@@ -77,6 +95,8 @@ namespace EncryptDecrypt
                             }
                         }
                     }
+                    catch (EncryptionException ex)
+                    { }
                     catch (Exception ex)
                     {
                         throw new EncryptionException(this, property.Name, ex);

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using EncryptDecrypt.Exceptions;
+using Microsoft.WindowsAzure.Storage;
 
 namespace EncryptDecryptTests
 {
@@ -12,22 +13,22 @@ namespace EncryptDecryptTests
     {
         TestTable encryptedTable;
         TestTable unencryptedTable;
-        TestEntity testEntity;
-
+        EncryptableTestEntity testEntity;
 
         [SetUp]
         public void Setup()
         {
-            encryptedTable = new TestTable(true);
+            encryptedTable = new TestTable(CloudStorageAccount.DevelopmentStorageAccount);
             encryptedTable.CurrentEncryptionVersion = SetupFixture.TEST_ENCRYPTION_VERSION;
 
-            unencryptedTable = new TestTable(false);
+            unencryptedTable = new TestTable(CloudStorageAccount.DevelopmentStorageAccount);
             unencryptedTable.CurrentEncryptionVersion = 0;
 
-            testEntity = new TestEntity()
+            testEntity = new EncryptableTestEntity()
             {
                 StringField = Guid.NewGuid().ToString(),
-                ByteField = Guid.NewGuid().ToByteArray()
+                ByteField = Guid.NewGuid().ToByteArray(),
+                EncryptionVersion = SetupFixture.TEST_ENCRYPTION_VERSION
             };
         }
 
@@ -38,14 +39,14 @@ namespace EncryptDecryptTests
             {
                 encryptedTable.AddEntity(testEntity);
 
-                TestEntity retrievedEntity = encryptedTable.GetEntity(testEntity);
+                EncryptableTestEntity retrievedEntity = encryptedTable.GetEntity(testEntity);
                 testEntity.AssertEqualTo(retrievedEntity);
 
                 testEntity.StringField = Guid.NewGuid().ToString();
                 testEntity.ByteField = Guid.NewGuid().ToByteArray();
                 encryptedTable.UpdateEntity(testEntity);
 
-                TestEntity secondRetrievedEntity = encryptedTable.GetEntity(testEntity);
+                EncryptableTestEntity secondRetrievedEntity = encryptedTable.GetEntity(testEntity);
                 testEntity.AssertEqualTo(secondRetrievedEntity);
             }
             finally
@@ -61,7 +62,7 @@ namespace EncryptDecryptTests
             //Write encrypted, but read unencrypted, so the values should be different
             encryptedTable.AddEntity(testEntity);
 
-            TestEntity plaintextEntity = unencryptedTable.GetEntity(testEntity);
+            EncryptableTestEntity plaintextEntity = unencryptedTable.GetEntity(newEntity);
             Assert.AreNotEqual(testEntity.StringField, plaintextEntity.StringField);
             CollectionAssert.AreNotEqual(testEntity.ByteField, plaintextEntity.ByteField);
         }
@@ -73,8 +74,7 @@ namespace EncryptDecryptTests
             testEntity.EncryptionVersion = 1; //just totally lying here
 
             unencryptedTable.AddEntity(testEntity);
-            unencryptedTable.SaveChanges();
-
+            
             var exception = Assert.Throws<AzureTableCryptoDecryptionException>(() =>
             {
                 encryptedTable.GetEntity(testEntity);

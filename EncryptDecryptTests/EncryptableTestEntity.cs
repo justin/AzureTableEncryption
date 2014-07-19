@@ -14,7 +14,6 @@ namespace EncryptDecryptTests
         {
             this.PartitionKey = "TestEntityPartition";
             this.RowKey = Guid.NewGuid().ToString();
-            base.EncryptionVersion = SetupFixture.TEST_ENCRYPTION_VERSION;
         }
 
         [Encrypt]

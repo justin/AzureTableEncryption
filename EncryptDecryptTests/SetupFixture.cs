@@ -23,10 +23,13 @@ public class SetupFixture
     [SetUp]
     public void Setup()
     {
-        CloudStorageAccount acct = CloudStorageAccount.DevelopmentStorageAccount;
+        CloudStorageAccount account = CloudStorageAccount.DevelopmentStorageAccount;
+
+        // Init the Crypto Library.
+        AzureTableCrypto.Initialize(account);
 
         //Make sure the test table exists
-        CloudTableClient client = acct.CreateCloudTableClient();
+        CloudTableClient client = account.CreateCloudTableClient();
         var table = client.GetTableReference(TestTable.TABLE_NAME);
         table.CreateIfNotExists();
 
@@ -37,22 +40,10 @@ public class SetupFixture
         if (cert == null)
         {
             Assert.Fail("The test encryption certificate does not appear to be installed. Before running the tests you must install the certificate by following the instructions in EncryptDecrypTests/InstallingTestCert.txt");
-
-            //This doesn't seem to work right
-            //string certPath = Path.GetDirectoryName(typeof(SetupFixture).Assembly.Location);
-            //certPath = Path.Combine(certPath, TEST_CERT_PFX_NAME);
-
-            //if (!File.Exists(certPath))
-            //{
-            //    Assert.Fail("Test certificate is not installed, and could not locate PFX file at path {0}", certPath);
-            //}
-
-            //cert = new X509Certificate2(certPath, "AzureTableEncrypt");
-            //CertificateHelper.InstallCertificate(cert);
         }
 
         //Make sure there's an encryption key for us to use
-        AzureTableCrypto c = new AzureTableCrypto(acct);
+        AzureTableCrypto c = AzureTableCrypto.Get();
         bool encryptionExists = false;
         try
         {
@@ -66,7 +57,7 @@ public class SetupFixture
         if (!encryptionExists)
         {
             AzureTableKeyGenerator keyGen = new AzureTableKeyGenerator(cert);
-            keyGen.CreateNewKey(acct, TEST_ENCRYPTION_VERSION);
+            keyGen.CreateNewKey(account, TEST_ENCRYPTION_VERSION);
         }
     }
 }

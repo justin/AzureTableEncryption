@@ -24,16 +24,6 @@ namespace EncryptDecrypt
         private static AzureTableCryptoKeyStore keyStore;
         private static AzureTableCrypto singleton = new AzureTableCrypto();
 
-        [Obsolete("Only here for backwards compatibility. Use the static Get() method instead.")]
-        public AzureTableCrypto(CloudStorageAccount acct)
-        {
-            //This is here just for backwards compatibility
-            if (keyStore == null)
-            {
-                Initialize(acct);
-            }
-        }
-
         internal AzureTableCrypto()
         {
         }
