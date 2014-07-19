@@ -62,7 +62,7 @@ namespace EncryptDecryptTests
             //Write encrypted, but read unencrypted, so the values should be different
             encryptedTable.AddEntity(testEntity);
 
-            EncryptableTestEntity plaintextEntity = unencryptedTable.GetEntity(newEntity);
+            EncryptableTestEntity plaintextEntity = unencryptedTable.GetEntity(testEntity);
             Assert.AreNotEqual(testEntity.StringField, plaintextEntity.StringField);
             CollectionAssert.AreNotEqual(testEntity.ByteField, plaintextEntity.ByteField);
         }

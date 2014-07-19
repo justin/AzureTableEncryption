@@ -7,6 +7,7 @@ using EncryptDecrypt.Exceptions;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using System.Security.Cryptography;
+using System.Diagnostics;
 
 namespace EncryptDecrypt
 {
@@ -96,7 +97,9 @@ namespace EncryptDecrypt
                         }
                     }
                     catch (EncryptionException ex)
-                    { }
+                    {
+                        Trace.Write(ex.ToString());
+                    }
                     catch (Exception ex)
                     {
                         throw new EncryptionException(this, property.Name, ex);

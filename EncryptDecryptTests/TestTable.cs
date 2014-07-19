@@ -7,6 +7,7 @@ using Microsoft.WindowsAzure.Storage;
 using NUnit.Framework;
 using Microsoft.WindowsAzure.Storage.Table;
 using EncryptDecrypt.Exceptions;
+using System.Diagnostics;
 
 namespace EncryptDecryptTests
 {
@@ -43,7 +44,7 @@ namespace EncryptDecryptTests
             }    
             catch (Exception ex)
             {
-                // No Op.
+                Trace.Write(ex.ToString());
             }
         }
 
