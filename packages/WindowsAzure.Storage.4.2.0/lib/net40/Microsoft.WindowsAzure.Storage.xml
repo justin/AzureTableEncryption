@@ -24445,6 +24445,53 @@
             Output all debugging and tracing messages.
             </summary>
         </member>
+        <member name="T:Microsoft.WindowsAzure.Storage.NameValidator">
+            <summary>
+            Provides helpers to validate resource names across the Microsoft Azure Storage Services.
+            </summary>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateContainerName(System.String)">
+            <summary>
+            Checks if a container name is valid.
+            </summary>
+            <param name="containerName">A string representing the container name to validate.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateQueueName(System.String)">
+            <summary>
+            Checks if a queue name is valid.
+            </summary>
+            <param name="queueName">A string representing the queue name to validate.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateShareName(System.String)">
+            <summary>
+            Checks if a share name is valid.
+            </summary>
+            <param name="shareName">A string representing the share name to validate.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateBlobName(System.String)">
+            <summary>
+            Checks if a blob name is valid.
+            </summary>
+            <param name="blobName">A string representing the blob name to validate.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateFileName(System.String)">
+            <summary>
+            Checks if a file name is valid.
+            </summary>
+            <param name="fileName">A string representing the file name to validate.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateDirectoryName(System.String)">
+            <summary>
+            Checks if a directory name is valid.
+            </summary>
+            <param name="directoryName">A string representing the directory name to validate.</param>
+        </member>
+        <member name="M:Microsoft.WindowsAzure.Storage.NameValidator.ValidateTableName(System.String)">
+            <summary>
+            Checks if a table name is valid.
+            </summary>
+            <param name="tableName">A string representing the table name to validate.</param>
+        </member>
         <member name="T:Microsoft.WindowsAzure.Storage.OperationContext">
             <summary>
             Represents the context for a request operation against the storage service, and provides additional runtime information about its execution.
@@ -26895,6 +26942,11 @@
             Default is 32 MB.
             </summary>
         </member>
+        <member name="F:Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions.maximumExecutionTime">
+            <summary>
+            Stores the maximum execution time.
+            </summary>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Blob.BlobRequestOptions"/> class.
@@ -27166,7 +27218,7 @@
         </member>
         <member name="F:Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption.None">
             <summary>
-            Delete blobs but not snapshots.
+            Delete the blob only. If the blob has snapshots, this option will result in an error from the service.
             </summary>
         </member>
         <member name="F:Microsoft.WindowsAzure.Storage.Blob.DeleteSnapshotsOption.IncludeSnapshots">
@@ -28627,6 +28679,11 @@
             Stores the parallelism factor.
             </summary>
         </member>
+        <member name="F:Microsoft.WindowsAzure.Storage.File.FileRequestOptions.maximumExecutionTime">
+            <summary>
+            Stores the maximum execution time.
+            </summary>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.File.FileRequestOptions.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.File.FileRequestOptions"/> class.
@@ -29291,6 +29348,11 @@
         <member name="T:Microsoft.WindowsAzure.Storage.Queue.QueueRequestOptions">
             <summary>
             Represents a set of timeout and retry policy options that may be specified for a request against the Queue service.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsAzure.Storage.Queue.QueueRequestOptions.maximumExecutionTime">
+            <summary>
+            Stores the maximum execution time.
             </summary>
         </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Queue.QueueRequestOptions.#ctor">
@@ -30773,6 +30835,11 @@
             Represents a set of timeout and retry policy options that may be specified for a request against the Table service.
             </summary>
         </member>
+        <member name="F:Microsoft.WindowsAzure.Storage.Table.TableRequestOptions.maximumExecutionTime">
+            <summary>
+            Stores the maximum execution time.
+            </summary>
+        </member>
         <member name="M:Microsoft.WindowsAzure.Storage.Table.TableRequestOptions.#ctor">
             <summary>
             Initializes a new instance of the <see cref="T:Microsoft.WindowsAzure.Storage.Table.TableRequestOptions"/> class.
@@ -31882,6 +31949,11 @@
         <member name="F:Microsoft.WindowsAzure.Storage.Shared.Protocol.Constants.ETagPrefix">
             <summary>
             The prefix used in all ETags.
+            </summary>
+        </member>
+        <member name="F:Microsoft.WindowsAzure.Storage.Shared.Protocol.Constants.MaxMaximumExecutionTime">
+            <summary>
+            Constant for the max value of MaximumExecutionTime.
             </summary>
         </member>
         <member name="F:Microsoft.WindowsAzure.Storage.Shared.Protocol.Constants.DefaultClientSideTimeout">
