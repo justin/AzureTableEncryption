@@ -41,7 +41,9 @@ namespace EncryptDecrypt
 
             var query = new TableQuery<SymmetricKey>();
 
-            return cloudTable.ExecuteQuery(query).ToList(); ;
+            IEnumerable<SymmetricKey> results = cloudTable.ExecuteQuery<SymmetricKey>(query);
+
+            return results.ToList();
         }
 
         private CloudTable GetTable()
